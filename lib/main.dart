@@ -45,7 +45,7 @@ class MedalInfo {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _chinaGoldNum = 0;
+  int _columnNum = 6 * 2;
 
   int _sortColumnIndex = 2;
   bool _isAscending = false;
@@ -58,58 +58,55 @@ class _MyHomePageState extends State<MyHomePage> {
     MedalInfo('england', 22, 21, 22),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    _chinaGoldNum = 38;
-  }
-
   void _incrementCounter() {
     setState(() {
       // retrive build method
-      _chinaGoldNum++;
+      int i = 0;
+      do {
+        if (_medalInfoList[i].country == 'china') {
+          _medalInfoList[i].gold++;
+        }
+      } while (++i < _medalInfoList.length);
     });
   }
 
   List<DataRow> _updateMedalData(double displayWidth) {
     List<DataRow> dataRows = [];
-    int _orderGold = 0;
+    int _order = 0;
+
+    if (_isAscending) {
+      _medalInfoList.sort((a, b) => a.gold.compareTo(b.gold));
+    } else {
+      _medalInfoList.sort((a, b) => b.gold.compareTo(a.gold));
+    }
 
     for (MedalInfo medalInfo in _medalInfoList) {
       dataRows.add(DataRow(cells: [
         DataCell(
           Container(
-              width: displayWidth / 6,
+              width: displayWidth / _columnNum,
               child: Text(
-                (++_orderGold).toString(),
+                (++_order).toString(),
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.ellipsis,
               )),
         ),
-        DataCell(Container(
-            width: displayWidth / 6,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Image(
-                    image: AssetImage("images/${medalInfo.country}.png"),
-                  ),
-                ),
-                Text(
-                  medalInfo.country,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ))),
         DataCell(
           Container(
-              width: displayWidth / 6,
+            width: displayWidth / _columnNum,
+            child: Image(
+              image: AssetImage("images/${medalInfo.country}.png"),
+              width: displayWidth / _columnNum,
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+              width: displayWidth / _columnNum,
               child: Text(
                 medalInfo.gold.toString(),
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 15,
                   color: Colors.orangeAccent,
                 ),
                 textAlign: TextAlign.center,
@@ -117,11 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         DataCell(
           Container(
-              width: displayWidth / 6,
+              width: displayWidth / _columnNum,
               child: Text(
                 medalInfo.silver.toString(),
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 15,
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
@@ -129,11 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         DataCell(
           Container(
-              width: displayWidth / 6,
+              width: displayWidth / _columnNum,
               child: Text(
                 medalInfo.copper.toString(),
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 15,
                   color: Colors.amberAccent,
                 ),
                 textAlign: TextAlign.center,
@@ -141,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         DataCell(
           Container(
-              width: displayWidth / 6,
+              width: displayWidth / _columnNum,
               child: Text(
                 medalInfo.total.toString(),
                 textAlign: TextAlign.center,
@@ -176,26 +173,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   columns: [
                     DataColumn(
                         label: Container(
-                      width: displayWidth / 6,
+                      width: displayWidth / _columnNum,
                       child: Text('名次'),
                     )),
                     DataColumn(
                         label: Container(
-                      width: displayWidth / 6,
+                      width: displayWidth / _columnNum,
                       child: Text('国家'),
                     )),
-                    /*DataColumn(
-                        label: Container (
-                          child: Text(''),
-                        )
-                      ),*/
                     DataColumn(
                       label: Container(
-                        width: displayWidth / 6,
+                        width: displayWidth / _columnNum,
                         child: Text(
                           '金牌',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
                             color: Colors.orangeAccent,
                           ),
                           textAlign: TextAlign.center,
@@ -219,11 +211,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     DataColumn(
                       label: Container(
-                        width: displayWidth / 6,
+                        width: displayWidth / _columnNum,
                         child: Text(
                           '银牌',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
                             color: Colors.grey,
                           ),
                           textAlign: TextAlign.center,
@@ -247,11 +239,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     DataColumn(
                       label: Container(
-                        width: displayWidth / 6,
+                        width: displayWidth / _columnNum,
                         child: Text(
                           '铜牌',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
                             color: Colors.amberAccent,
                           ),
                           textAlign: TextAlign.center,
@@ -275,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     DataColumn(
                       label: Container(
-                        width: displayWidth / 6,
+                        width: displayWidth / _columnNum,
                         child: Text(
                           '总数',
                           textAlign: TextAlign.center,
@@ -302,6 +294,32 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            Container(
+              height: 20,
+            ),
+            TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return new AlertDialog(
+                        title: Text("提示"),
+                        content: Text("待完善."),
+                        actions: [
+                          new TextButton(
+                              child: new Text('确定'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              })
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text('显示更多'),
+                style: ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                        TextStyle(fontSize: 18, color: Colors.black)))),
           ],
         ),
       ),
